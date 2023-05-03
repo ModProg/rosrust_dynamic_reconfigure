@@ -1,0 +1,38 @@
+[package]
+name = "rosrust_dynamic_reconfigure"
+version = "0.1.0"
+edition = "2021"
+categories = ["science::robotics", "config", "encoding"]
+description = "dynamic_reconfigure implementation for rosrust"
+keywords = ["dynamic_reconfigure", "rosrust", "ros"]
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/ModProg/rosrust_dynamic_reconfigure"
+documentation = "https://docs.rs/rosrust_dynamic_reconfigure"
+
+[dependencies]
+crossbeam = { version = "0.8", features = ["crossbeam-channel"] }
+derive_more = "0.99"
+parking_lot = { version = "0.12.1", features = ["deadlock_detection"] }
+rosrust = "0.9"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[[package.metadata.release.pre-release-replacements]]
+file = "CHANGELOG.md"
+search = '## \[Unreleased\]'
+replace = """
+<!-- ## [Unreleased] -->
+## [{{version}}] - {{date}}\
+"""
+[[package.metadata.release.pre-release-replacements]]
+file = "CHANGELOG.md"
+search = '\[unreleased\]: (.*)/(v.*)\.\.\.HEAD'
+replace = """
+[unreleased]: $1/{{tag_name}}...HEAD
+[{{version}}]: $1/$2...{{tag_name}}\
+"""
