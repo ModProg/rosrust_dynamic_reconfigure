@@ -1,0 +1,52 @@
+name: Test
+
+on:
+  push: null
+  pull_request: null
+  schedule: 
+    - cron: '0 12 * * *'
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        rust:
+          - 1.65
+          - stable
+          - nightly
+        include:
+          - rust: nightly
+            cargo_flags: -Z minimal-versions
+    runs-on: ubuntu-latest
+    container:
+      image: ros:noetic-ros-base-buster
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/
+            target
+          key: ${{ matrix.rust }}-${{ matrix.cargo_flags }}-${{ hashFiles('**/Cargo.toml') }}
+          restore-keys: |
+            ${{ matrix.rust }}-${{ matrix.cargo_flags }}-
+      - name: Setup Rust
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install curl
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain none -y
+          . "$HOME/.cargo/env"
+          rustup toolchain install ${{ matrix.rust }} --allow-downgrade --profile minimal
+      - name: Build
+        run:
+          . /opt/ros/noetic/setup.sh && . "$HOME/.cargo/env" && cargo build ${{ matrix.cargo_flags }}
+      - name: Test
+        run:
+          . /opt/ros/noetic/setup.sh && . "$HOME/.cargo/env" && cargo test --all-targets --no-fail-fast --workspace
+      - name: Doc Test
+        run:
+          . /opt/ros/noetic/setup.sh && . "$HOME/.cargo/env" && cargo test --doc --no-fail-fast --workspace
+      - name: Build Docs
+        run:
+          . /opt/ros/noetic/setup.sh && . "$HOME/.cargo/env" && cargo doc --workspace --no-deps

@@ -33,9 +33,6 @@ jobs:
           key: docs-${{ hashFiles('Cargo.toml') }}
           restore-keys: |
             docs-
-      # - uses: hecrj/setup-rust-action@v1
-      #   with:
-      #     rust-version: nightly
       - name: Setup Rust
         run: |
           sudo apt-get update
