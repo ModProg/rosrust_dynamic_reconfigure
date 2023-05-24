@@ -18,7 +18,7 @@ The `{namespace}` is the place where the config is "hosted" normally `~`.
 
 Names are expected to match the pattern `[a-zA-Z][a-zA-Z0-9_]*` and descriptions
 can be any string not containing quotes, i.e. `"` and `'`[^2]. Though quotes are
-probably fine.
+probably fine, this might just be a limitation of the original library.
 
 ### Endpoints
 A Node implementing `dynamic_reconfigure` needs to provide[^3]:
