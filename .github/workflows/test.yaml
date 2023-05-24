@@ -3,7 +3,7 @@ name: Test
 on:
   push: null
   pull_request: null
-  schedule: 
+  schedule:
     - cron: '0 12 * * *'
 
 jobs:
@@ -15,9 +15,10 @@ jobs:
           - 1.65
           - stable
           - nightly
-        include:
-          - rust: nightly
-            cargo_flags: -Z minimal-versions
+        # some deps don't do semver correct
+        # include:
+        #   - rust: nightly
+        #     cargo_flags: -Z minimal-versions
     runs-on: ubuntu-latest
     container:
       image: ros:noetic-ros-base-buster
@@ -39,14 +40,10 @@ jobs:
           . "$HOME/.cargo/env"
           rustup toolchain install ${{ matrix.rust }} --allow-downgrade --profile minimal
       - name: Build
-        run:
-          . /opt/ros/noetic/setup.sh && . "$HOME/.cargo/env" && cargo build ${{ matrix.cargo_flags }}
+        run: . /opt/ros/noetic/setup.sh && . "$HOME/.cargo/env" && cargo build ${{ matrix.cargo_flags }}
       - name: Test
-        run:
-          . /opt/ros/noetic/setup.sh && . "$HOME/.cargo/env" && cargo test --all-targets --no-fail-fast --workspace
+        run: . /opt/ros/noetic/setup.sh && . "$HOME/.cargo/env" && cargo test --all-targets --no-fail-fast --workspace
       - name: Doc Test
-        run:
-          . /opt/ros/noetic/setup.sh && . "$HOME/.cargo/env" && cargo test --doc --no-fail-fast --workspace
+        run: . /opt/ros/noetic/setup.sh && . "$HOME/.cargo/env" && cargo test --doc --no-fail-fast --workspace
       - name: Build Docs
-        run:
-          . /opt/ros/noetic/setup.sh && . "$HOME/.cargo/env" && cargo doc --workspace --no-deps
+        run: . /opt/ros/noetic/setup.sh && . "$HOME/.cargo/env" && cargo doc --workspace --no-deps
