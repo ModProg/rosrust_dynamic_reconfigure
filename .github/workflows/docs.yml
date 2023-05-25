@@ -21,8 +21,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    container:
-      image: ros:noetic-ros-base-buster
     steps:
       - uses: actions/checkout@v2
       - uses: actions/cache@v3
@@ -33,16 +31,12 @@ jobs:
           key: docs-${{ hashFiles('Cargo.toml') }}
           restore-keys: |
             docs-
-      - name: Setup Rust
-        run: |
-          sudo apt-get update
-          sudo apt-get -y install curl
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain none -y
-          . "$HOME/.cargo/env"
-          rustup toolchain install nightly --allow-downgrade --profile minimal
+      - uses: hecrj/setup-rust-action@v1
+        with:
+          rust-version: nightly
       - name: Generate Docs (reference docs.rs)
-        run: |
-          . /opt/ros/noetic/setup.sh && . "$HOME/.cargo/env" && cargo rustdoc -- --cfg docsrs -Z unstable-options $(cargo metadata --format-version 1 | jq --raw-output '.packages | map("--extern-html-root-url=\(.name)=https://docs.rs/\(.name)/\(.version)") | join(" ")')
+        run:  |
+          cargo rustdoc --all-features -- --cfg docsrs -Z unstable-options $(cargo metadata --format-version 1 | jq --raw-output '.packages | map("--extern-html-root-url=\(.name)=https://docs.rs/\(.name)/\(.version)") | join(" ")')
       - uses: actions/upload-pages-artifact@v1
         with:
           path: 'target/doc'
