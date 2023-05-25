@@ -24,10 +24,14 @@ use rosrust::error::Error;
 use rosrust::{publish, service, Publisher, Service};
 use serde::{Deserialize, Serialize};
 
+#[cfg(not(feature="builtin-msgs"))]
 mod msg {
+    #![allow(clippy::all)]
     rosrust::rosmsg_include!(dynamic_reconfigure/ConfigDescription, dynamic_reconfigure/Reconfigure);
     pub use dynamic_reconfigure::*;
 }
+#[cfg(feature="builtin-msgs")]
+mod msg;
 
 #[derive(Serialize, Deserialize, From, Clone, Debug, Display, PartialEq, PartialOrd)]
 #[serde(untagged)]
@@ -102,7 +106,7 @@ pub fn msg_from_iterator(iter: impl IntoIterator<Item = (String, Value)>) -> msg
     cfg
 }
 
-#[derive(Clone, Copy, PartialEq, Debug, Display, Serialize)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Display, Serialize)]
 pub enum Type {
     #[display(fmt = "str")]
     #[serde(rename = "str")]
@@ -358,7 +362,7 @@ impl Property {
     }
 }
 
-#[derive(Clone, PartialEq, Debug, Display)]
+#[derive(Clone, PartialEq, Eq, Debug, Display)]
 pub enum GroupType {
     #[display(fmt = "")]
     Normal,
@@ -372,7 +376,7 @@ pub enum GroupType {
     Apply,
 }
 
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub struct Group {
     pub name: String,
     pub state: bool,
