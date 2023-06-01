@@ -23,7 +23,7 @@ all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
 [features]
-"builtin-msgs" = []
+builtin-msgs = []
 
 [[package.metadata.release.pre-release-replacements]]
 file = "CHANGELOG.md"
