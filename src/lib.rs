@@ -21,7 +21,7 @@ use parking_lot::{Mutex, RwLock, RwLockReadGuard};
 use rosrust::api::error::Result;
 use rosrust::error::naming::ErrorKind;
 use rosrust::error::Error;
-use rosrust::{publish, service, Publisher, Service};
+use rosrust::{publish, service, Publisher, Service, ros_err};
 use serde::{Deserialize, Serialize};
 
 #[cfg(not(feature="builtin-msgs"))]
@@ -666,7 +666,9 @@ impl<C: Config> Server<C> {
             let param = rosrust::param(&format!("{namespace}{name}"))
                 .ok_or_else(|| format!("unable to get param: `{namespace}{name}`"))?;
             if param.exists()? {
-                config.set(name.as_str(), param.get()?)?;
+                if let Err(e) = config.set(name.as_str(), param.get()?) {
+                    ros_err!("{e}");
+                }
             }
             config.clean_up();
         }
