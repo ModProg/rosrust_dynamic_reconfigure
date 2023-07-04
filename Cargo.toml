@@ -1,6 +1,6 @@
 [package]
 name = "rosrust_dynamic_reconfigure"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 categories = ["science::robotics", "config", "encoding"]
 description = "dynamic_reconfigure implementation for rosrust"
