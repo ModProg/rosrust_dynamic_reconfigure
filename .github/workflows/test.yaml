@@ -39,6 +39,9 @@ jobs:
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain none -y
           . "$HOME/.cargo/env"
           rustup toolchain install ${{ matrix.rust }} --allow-downgrade --profile minimal
+      - name: Fix versions for 1.65
+        if: matrix.rust == '1.65'
+        run: . "$HOME/.cargo/env" && cargo add time@=0.3.23
       - name: Build
         run: . /opt/ros/noetic/setup.sh && . "$HOME/.cargo/env" && cargo build ${{ matrix.cargo_flags }}
       - name: Test
